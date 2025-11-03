@@ -22,21 +22,24 @@ function App() {
     }
   });
 
-
-  async function deleteHandler(todo) {
-    try {
-      await deleteTodo(todo);
-      updateList();
-    } catch (error) {
-      console.log('errore', error);
+  const deleteMutation = useMutation({
+    mutationKey: ['deleteTodo'],
+    mutationFn: td => deleteTodo(td),
+    onSuccess: (_, td) => {
+      qClient.setQueryData(['todos'], tds => tds.filter(x => x.id !== td.id));
     }
-  }
+  });
 
   return (
     <>
       {query.isPending && <h1>attendi...</h1>}
       {query.isError && <h3>errore: {query.error.message}</h3>}
-      {query.isSuccess && <List todos={query.data} completeHandler={completeMutation.mutate} deleteHandler={deleteHandler} />}
+      {query.isSuccess && <List 
+                            todos={query.data} 
+                            completeHandler={completeMutation.mutate} 
+                            deleteHandler={deleteMutation.mutate} 
+                          />
+      }
     </>
   )
 }
