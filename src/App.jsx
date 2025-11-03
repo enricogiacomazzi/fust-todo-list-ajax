@@ -4,15 +4,20 @@ import viteLogo from '/vite.svg'
 import './App.css'
 import { List } from './components/List';
 import { deleteTodo, getTodos, toggleTodo, toggleTodo2 } from '../services/todoService';
+import { useQuery } from '@tanstack/react-query';
 
 function App() {
-  const [todos, setTodos] = useState([]);
-  const [pending, setPending] = useState(false);
-  const [error, setError] = useState('');
+  const query = useQuery({
+    queryKey: ['todos'],
+    queryFn: getTodos
+  });
 
-  useEffect(() => {
-    updateList();
-  }, []);
+  console.log('query', query.isError, query.data);
+  const [todos, setTodos] = useState([]);
+
+  // useEffect(() => {
+  //   updateList();
+  // }, []);
 
   async function updateList() {
     try {
@@ -48,9 +53,9 @@ function App() {
 
   return (
     <>
-      {pending && <h1>attendi...</h1>}
-      {error && <h3>errore: {error}</h3>}
-      <List todos={todos} completeHandler={completeHandler} deleteHandler={deleteHandler} />
+      {query.isPending && <h1>attendi...</h1>}
+      {query.isError && <h3>errore: {query.error.message}</h3>}
+      {query.isSuccess && <List todos={query.data} completeHandler={completeHandler} deleteHandler={deleteHandler} />}
     </>
   )
 }
