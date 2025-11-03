@@ -9,7 +9,12 @@ export async function getTodos() {
     const res = await axios.get(baseUrl);
     // await wait(1000);
     return res.data;
-  }
+}
+
+export async function addTodo(text) {
+    const res = await axios.post(baseUrl, {text, done: false});
+    return res.data;
+}
 
 export async function deleteTodo(todo) {
     await axios.delete(baseUrl + '/' + todo.id);

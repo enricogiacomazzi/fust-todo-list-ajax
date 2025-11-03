@@ -3,8 +3,9 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import { List } from './components/List';
-import { deleteTodo, getTodos, toggleTodo, toggleTodo2 } from '../services/todoService';
+import { addTodo, deleteTodo, getTodos, toggleTodo, toggleTodo2 } from '../services/todoService';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { AddTodo } from './components/AddTodo';
 
 function App() {
   const qClient = useQueryClient();
@@ -30,15 +31,26 @@ function App() {
     }
   });
 
+  const addMutation = useMutation({
+    mutationKey: ['addTodo'],
+    mutationFn: ({text}) => addTodo(text),
+    onSuccess: (todo) => {
+      qClient.setQueryData(['todos'], tds => [...tds, todo]);
+    }
+  });
+
   return (
     <>
       {query.isPending && <h1>attendi...</h1>}
       {query.isError && <h3>errore: {query.error.message}</h3>}
-      {query.isSuccess && <List 
-                            todos={query.data} 
-                            completeHandler={completeMutation.mutate} 
-                            deleteHandler={deleteMutation.mutate} 
-                          />
+      {query.isSuccess && <>
+                            <AddTodo addTodo={addMutation.mutate} />
+                            <List 
+                              todos={query.data} 
+                              completeHandler={completeMutation.mutate} 
+                              deleteHandler={deleteMutation.mutate} 
+                            />
+                          </>
       }
     </>
   )
