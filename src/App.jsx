@@ -6,14 +6,26 @@ import { List } from './components/List';
 import { deleteTodo, getTodos, toggleTodo, toggleTodo2 } from '../services/todoService';
 
 function App() {
-  const [todos, setTodos] = useState([])
+  const [todos, setTodos] = useState([]);
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     updateList();
   }, []);
 
-  function updateList() {
-    getTodos().then(x => setTodos(x));
+  async function updateList() {
+    try {
+      setPending(true);
+      const tds = await getTodos();
+      setTodos(tds)
+    }
+    catch(e) {
+      setError('qualcosa è andato storto... :(');
+    } finally {
+      setPending(false);
+    }
+
   }
 
   async function completeHandler(todo) {
@@ -36,6 +48,8 @@ function App() {
 
   return (
     <>
+      {pending && <h1>attendi...</h1>}
+      {error && <h3>errore: {error}</h3>}
       <List todos={todos} completeHandler={completeHandler} deleteHandler={deleteHandler} />
     </>
   )
