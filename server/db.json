@@ -1,0 +1,19 @@
+{
+  "todos": [
+    {
+      "id": "d2d8",
+      "text": "fare la spesa",
+      "done": false
+    },
+    {
+      "id": "56fa",
+      "text": "comprare il latte",
+      "done": false
+    },
+    {
+      "id": "5c17",
+      "text": "pisciare il cane",
+      "done": false
+    }
+  ]
+}

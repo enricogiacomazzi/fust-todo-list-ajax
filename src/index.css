@@ -1,0 +1,20 @@
+
+.btn {
+  margin-left: 10px;
+  width: 42px;
+}
+
+.list-group-item {
+  display: flex;
+  align-items: center;
+}
+
+.list-group-item > span {
+  flex-grow: 10;
+}
+
+
+.done {
+  font-weight: bold;
+  text-decoration: line-through;
+}
