@@ -4,43 +4,24 @@ import viteLogo from '/vite.svg'
 import './App.css'
 import { List } from './components/List';
 import { deleteTodo, getTodos, toggleTodo, toggleTodo2 } from '../services/todoService';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 function App() {
+  const qClient = useQueryClient();
+
   const query = useQuery({
     queryKey: ['todos'],
     queryFn: getTodos
   });
 
-  console.log('query', query.isError, query.data);
-  const [todos, setTodos] = useState([]);
-
-  // useEffect(() => {
-  //   updateList();
-  // }, []);
-
-  async function updateList() {
-    try {
-      setPending(true);
-      const tds = await getTodos();
-      setTodos(tds)
+  const completeMutation = useMutation({
+    mutationKey: ['toggleTodo'],
+    mutationFn: td => toggleTodo(td),
+    onSuccess: () => {
+      qClient.invalidateQueries({queryKey: ['todos']})
     }
-    catch(e) {
-      setError('qualcosa è andato storto... :(');
-    } finally {
-      setPending(false);
-    }
+  });
 
-  }
-
-  async function completeHandler(todo) {
-    try {
-      await toggleTodo(todo);
-      updateList();
-    } catch(e) {
-      console.log('errore', error);
-    }
-  }
 
   async function deleteHandler(todo) {
     try {
@@ -55,7 +36,7 @@ function App() {
     <>
       {query.isPending && <h1>attendi...</h1>}
       {query.isError && <h3>errore: {query.error.message}</h3>}
-      {query.isSuccess && <List todos={query.data} completeHandler={completeHandler} deleteHandler={deleteHandler} />}
+      {query.isSuccess && <List todos={query.data} completeHandler={completeMutation.mutate} deleteHandler={deleteHandler} />}
     </>
   )
 }
